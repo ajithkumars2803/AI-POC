@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import './App.css';
 
-const API_URL = 'https://testsagemakerapi.com'; // Replace with full endpoint if needed
+const API_URL = "https://xbqqtybavj.execute-api.us-east-1.amazonaws.com"; // <-- your API Gateway URL
 
 function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
   const [prompt, setPrompt] = useState('');
-  const [response, setResponse] = useState('');
+  const [apiResponse, setApiResponse] = useState('');
 
   const handleLogin = () => {
     if (username === 'Ajithkumar' && password === 'Ajith@123') {
@@ -18,22 +18,20 @@ function App() {
     }
   };
 
-  const sendPromptToAPI = async () => {
+  const callAPI = async () => {
     try {
-      const res = await fetch(API_URL, {
+      const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt: prompt }),
+        body: JSON.stringify({ prompt }), // send the prompt as JSON
       });
 
-      if (!res.ok) throw new Error('API error');
-
-      const data = await res.json();
-      setResponse(JSON.stringify(data, null, 2));
-    } catch (err) {
-      setResponse('Error: ' + err.message);
+      const data = await response.json();
+      setApiResponse(JSON.stringify(data, null, 2));
+    } catch (error) {
+      setApiResponse(`Error: ${error.message}`);
     }
   };
 
@@ -57,19 +55,17 @@ function App() {
           <button onClick={handleLogin}>Login</button>
         </div>
       ) : (
-        <div className="prompt-area">
+        <div className="dashboard">
           <h2>Welcome, {username}</h2>
           <textarea
             rows="4"
             cols="50"
-            placeholder="Type your instruction (e.g., I need to create a EC2 server)"
+            placeholder="Enter your prompt, e.g. 'create an ec2 server'"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-          />
-          <br />
-          <button onClick={sendPromptToAPI}>Submit Prompt</button>
-          <h3>API Response:</h3>
-          <pre>{response}</pre>
+          /><br />
+          <button onClick={callAPI}>Send Prompt</button>
+          <pre>{apiResponse}</pre>
         </div>
       )}
     </div>
