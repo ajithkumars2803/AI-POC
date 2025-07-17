@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 
-const API_URL = "https://r6keoq81bd.execute-api.us-east-1.amazonaws.com/prod/invocations"; // <-- your API Gateway URL
+const API_URL = "https://r6keoq81bd.execute-api.us-east-1.amazonaws.com/prod/invocations";
 
 function App() {
   const [username, setUsername] = useState('');
@@ -25,13 +25,20 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt }), // send the prompt as JSON
+        body: JSON.stringify({ prompt }),
       });
+
+      if (!response.ok) {
+        // Show backend HTTP error
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
 
       const data = await response.json();
       setApiResponse(JSON.stringify(data, null, 2));
     } catch (error) {
-      setApiResponse(`Error: ${error.message}`);
+      console.error('API call failed:', error);
+      setApiResponse(`🚨 Error: ${error.message}`);
     }
   };
 
@@ -60,7 +67,7 @@ function App() {
           <textarea
             rows="4"
             cols="50"
-            placeholder="Enter your prompt, e.g. 'create an ec2 server'"
+            placeholder="Enter your prompt, e.g. 'create ec2 server'"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
           /><br />
