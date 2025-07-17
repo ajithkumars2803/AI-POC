@@ -1,23 +1,66 @@
-.App {
+/* App.css */
+
+body {
+  margin: 0;
   font-family: Arial, sans-serif;
-  padding: 2rem;
-  text-align: center;
+  background-color: #121212; /* Dark background */
+  color: #ffffff; /* Light text */
 }
 
-.login input {
-  margin: 0.5rem;
-  padding: 0.5rem;
+.App {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.login, .dashboard {
+  background-color: #1e1e1e;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+input, textarea {
+  width: 300px;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #2c2c2c;
+  color: #ffffff;
+  border: 1px solid #444;
+  border-radius: 5px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #bbbbbb;
 }
 
 button {
-  padding: 0.5rem 1rem;
-  margin-top: 1rem;
+  background-color: #03dac6;
+  color: #000;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #018786;
 }
 
 pre {
-  text-align: left;
-  background-color: #f5f5f5;
-  padding: 1rem;
-  margin-top: 1rem;
+  background-color: #2c2c2c;
+  color: #ffffff;
+  padding: 15px;
+  border-radius: 5px;
+  max-width: 600px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-top: 20px;
 }
 

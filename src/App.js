@@ -9,6 +9,8 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [prompt, setPrompt] = useState('');
   const [apiResponse, setApiResponse] = useState('');
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
+  const [lastPrompt, setLastPrompt] = useState('');
 
   const handleLogin = () => {
     if (username === 'Ajithkumar' && password === 'Ajith@123') {
@@ -19,23 +21,46 @@ function App() {
   };
 
   const callAPI = async () => {
+    let promptToSend = prompt.trim();
+
+    // If user types "yes" or similar, send "confirm <lastPrompt>"
+    if (
+      awaitingConfirmation &&
+      ['yes', 'ok', 'okay', 'y'].includes(prompt.toLowerCase())
+    ) {
+      promptToSend = `confirm ${lastPrompt}`;
+    }
+
     try {
       const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt: promptToSend }),
       });
 
       if (!response.ok) {
-        // Show backend HTTP error
         const errorText = await response.text();
         throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
 
       const data = await response.json();
       setApiResponse(JSON.stringify(data, null, 2));
+
+      // If backend responds with confirmation message, enable next-step logic
+      if (
+        data.confirmation &&
+        data.confirmation.toLowerCase().includes('shall i continue')
+      ) {
+        setAwaitingConfirmation(true);
+        setLastPrompt(prompt); // remember original request
+      } else {
+        setAwaitingConfirmation(false);
+        setLastPrompt('');
+      }
+
+      setPrompt('');
     } catch (error) {
       console.error('API call failed:', error);
       setApiResponse(`🚨 Error: ${error.message}`);
@@ -67,7 +92,7 @@ function App() {
           <textarea
             rows="4"
             cols="50"
-            placeholder="Enter your prompt, e.g. 'create ec2 server'"
+            placeholder={awaitingConfirmation ? 'Type yes to confirm...' : 'Enter your prompt, e.g. "create ec2 server"'}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
           /><br />
