@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 
-const API_URL = "https://xbqqtybavj.execute-api.us-east-1.amazonaws.com"; // <-- your API Gateway URL
+const API_URL = "https://r6keoq81bd.execute-api.us-east-1.amazonaws.com/prod/invocations"; // <-- your API Gateway URL
 
 function App() {
   const [username, setUsername] = useState('');
