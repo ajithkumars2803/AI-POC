@@ -2,67 +2,54 @@ import React, { useState } from 'react';
 import ConfirmationPopup from './ConfirmationPopup';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL;
-
 function PromptInterface() {
   const [prompt, setPrompt] = useState('');
   const [response, setResponse] = useState('');
   const [confirmation, setConfirmation] = useState(null);
+  const [lastPrompt, setLastPrompt] = useState(''); // track last prompt
 
   const handlePrompt = async () => {
-    if (!API_URL) {
-      console.error("API_URL is not defined. Check your .env file.");
-      setResponse("❌ API URL not configured.");
-      return;
-    }
-
     try {
-      const res = await axios.post(API_URL, { prompt });
+      const res = await axios.post('https://r6keoq81bd.execute-api.us-east-1.amazonaws.com/prod/invocations', {
+        prompt,
+      });
       const data = res.data;
-
       if (data.confirmation) {
         setConfirmation(data.confirmation);
+        setLastPrompt(prompt); // save the original prompt
       } else {
         setResponse(data.message || JSON.stringify(data));
       }
     } catch (error) {
       console.error("API error:", error);
-      setResponse(`🚨 Error: ${error.message}`);
+      setResponse("API call failed");
     }
   };
 
   const handleConfirmation = async (confirmed) => {
     setConfirmation(null);
-
     if (confirmed) {
       try {
-        const res = await axios.post(API_URL, { prompt: 'yes' });
+        const res = await axios.post('https://r6keoq81bd.execute-api.us-east-1.amazonaws.com/prod/invocations', {
+          prompt: lastPrompt,
+          confirm: true,
+        });
         setResponse(res.data.message || JSON.stringify(res.data));
       } catch (error) {
-        console.error("Confirmation error:", error);
-        setResponse(`🚨 Error: ${error.message}`);
+        console.error("Confirmation API error:", error);
+        setResponse("Failed to confirm action.");
       }
     } else {
-      setResponse("✅ I did not create anything.");
+      setResponse("I did not create anything.");
     }
   };
 
   return (
     <div>
       <h2>Enter Prompt</h2>
-      <input
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        placeholder="e.g. create ec2 server"
-        style={{ width: '300px', padding: '8px', marginRight: '10px' }}
-      />
+      <input value={prompt} onChange={e => setPrompt(e.target.value)} />
       <button onClick={handlePrompt}>Submit</button>
-
-      <p style={{ whiteSpace: 'pre-wrap', marginTop: '20px' }}>
-        <strong>Response:</strong><br />
-        {response}
-      </p>
-
+      <p>Response: {response}</p>
       {confirmation && (
         <ConfirmationPopup
           message={confirmation}

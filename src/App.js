@@ -1,15 +1,8 @@
-import React, { useState } from 'react';
-import Login from './components/Login';
-import PromptInterface from './components/PromptInterface';
+import React from "react";
+import PromptInterface from "./PromptInterface";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  return (
-    <div className="app">
-      {isLoggedIn ? <PromptInterface /> : <Login onLogin={() => setIsLoggedIn(true)} />}
-    </div>
-  );
+  return <PromptInterface />;
 }
 
 export default App;
